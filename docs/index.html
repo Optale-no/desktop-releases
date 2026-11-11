@@ -11,7 +11,6 @@
   <script src="download.js" defer></script>
 </head>
 <body>
-  <header><a class="wordmark" href="https://optale.com" aria-label="Optale home">optale<span class="brand-dot">.</span></a><span class="header-label">CONSOLE FOR DESKTOP</span></header>
   <main>
     <section class="hero" aria-labelledby="title">
       <img class="app-icon" src="assets/icon.png" width="112" height="112" alt="Optale Console app icon">
@@ -21,18 +20,21 @@
       <div class="download-area">
         <a id="download" class="primary" href="https://github.com/Optale-no/desktop-releases/releases/latest">View latest release <span aria-hidden="true">↓</span></a>
         <p id="computer-guidance" hidden>Download on your computer<span>Open this page on your Mac, Windows or Linux computer to install Optale Console.</span></p>
-        <p id="compatibility" class="muted">For Mac, Windows and Linux</p>
-        <p id="release" class="release" aria-live="polite">Checking the latest release...</p>
-        <p id="release-note" class="release-note" aria-live="polite">If the download is not listed here, open the latest release on GitHub.</p>
+        <div id="download-meta">
+          <p id="compatibility" class="muted compatibility">For Mac, Windows and Linux</p>
+          <p id="release" class="release" aria-live="polite">Checking the latest release...</p>
+          <p id="release-note" class="release-note" aria-live="polite">If the download is not listed here, open the latest release on GitHub.</p>
+        </div>
         <noscript><p class="release-note">JavaScript is off. Open the latest release on GitHub to choose your download.</p></noscript>
       </div>
     </section>
     <section class="install" aria-labelledby="install-title">
-      <div class="install-heading"><h2 id="install-title">Install on your computer</h2><div class="platforms" role="group" aria-label="Installation instructions"><button type="button" data-platform="mac" aria-pressed="false">Mac</button><button type="button" data-platform="windows" aria-pressed="false">Windows</button><button type="button" data-platform="linux" aria-pressed="false">Linux</button></div></div>
-      <div id="steps"><p class="muted">Choose your computer above to see the install steps.</p></div>
-      <p id="windows-note" class="windows-note" hidden>Windows is unsigned for now. Windows will show "Windows protected your PC". Click "More info", then "Run anyway".</p>
+      <div class="install-heading"><h2 id="install-title">Install on your computer</h2><div class="platforms" role="group" aria-label="Installation instructions"><span class="platform-highlight" aria-hidden="true"></span><button type="button" data-platform="mac" aria-pressed="false">Mac</button><button type="button" data-platform="windows" aria-pressed="false">Windows</button><button type="button" data-platform="linux" aria-pressed="false">Linux</button></div></div>
+      <div id="install-content">
+        <div id="steps"><p class="muted">Choose your computer above to see the install steps.</p></div>
+        <p id="windows-note" class="windows-note" hidden>Windows is unsigned for now. Windows will show "Windows protected your PC". Click "More info", then "Run anyway".</p>
+      </div>
     </section>
-    <nav class="other-downloads" aria-label="Downloads for all platforms"><span>Also available for</span><a data-download="mac" href="https://github.com/Optale-no/desktop-releases/releases/latest">Mac</a><a data-download="windows" href="https://github.com/Optale-no/desktop-releases/releases/latest">Windows</a><a data-download="linux" href="https://github.com/Optale-no/desktop-releases/releases/latest">Linux</a></nav>
   </main>
   <footer><span>Optale Console</span><a href="https://github.com/Optale-no/desktop-releases/releases">Release notes <span aria-hidden="true">↗</span></a></footer>
 </body>

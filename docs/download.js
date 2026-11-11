@@ -17,12 +17,69 @@ const platforms = {
 };
 const ua = navigator.userAgent;
 const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const visitorPlatform = !mobile && /Mac/i.test(ua) ? 'mac' : !mobile && /Windows/i.test(ua) ? 'windows' : !mobile && /Linux/i.test(ua) ? 'linux' : null;
-let selected = visitorPlatform;
+let selected = !mobile && /Mac/i.test(ua) ? 'mac' : !mobile && /Windows/i.test(ua) ? 'windows' : !mobile && /Linux/i.test(ua) ? 'linux' : null;
 let assets = [];
 let loaded = false;
 const download = document.querySelector('#download');
 const releaseNote = document.querySelector('#release-note');
+const install = document.querySelector('.install');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let animations = [];
+let copies = [];
+
+function moveHighlight() {
+  const button = document.querySelector('[data-platform][aria-pressed="true"]');
+  const highlight = document.querySelector('.platform-highlight');
+  highlight.style.opacity = button ? '1' : '0';
+  if (button) {
+    highlight.style.width = `${button.offsetWidth}px`;
+    highlight.style.transform = `translateX(${button.offsetLeft}px)`;
+  }
+}
+
+function transitionContent(update) {
+  animations.forEach(animation => animation.cancel());
+  copies.forEach(copy => copy.remove());
+  animations = [];
+  copies = [];
+  if (reducedMotion.matches) {
+    update();
+    return;
+  }
+  const height = install.getBoundingClientRect().height;
+  const targets = ['#download-meta', '#install-content'].map(selector => document.querySelector(selector));
+  copies = targets.map(target => {
+    const copy = target.cloneNode(true);
+    copy.removeAttribute('id');
+    copy.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+    copy.querySelectorAll('[aria-live]').forEach(node => node.removeAttribute('aria-live'));
+    copy.setAttribute('aria-hidden', 'true');
+    copy.inert = true;
+    copy.classList.add('crossfade-copy');
+    Object.assign(copy.style, { top: `${target.offsetTop}px`, left: `${target.offsetLeft}px`, width: `${target.offsetWidth}px`, margin: '0' });
+    return copy;
+  });
+  update();
+  const timing = { duration: 240, easing: 'ease-out' };
+  targets.forEach((target, index) => {
+    const copy = copies[index];
+    target.parentNode.append(copy);
+    animations.push(target.animate([{ opacity: 0 }, { opacity: 1 }], timing));
+    const fade = copy.animate([{ opacity: 1 }, { opacity: 0 }], timing);
+    fade.onfinish = () => copy.remove();
+    animations.push(fade);
+  });
+  animations.push(install.animate([{ height: `${height}px` }, { height: `${install.getBoundingClientRect().height}px` }], timing));
+}
+
+window.addEventListener('resize', moveHighlight);
+document.fonts.ready.then(moveHighlight);
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) {
+    animations.forEach(animation => animation.cancel());
+    copies.forEach(copy => copy.remove());
+  }
+});
 
 function render() {
   download.hidden = mobile;
@@ -31,6 +88,7 @@ function render() {
   document.querySelectorAll('[data-platform]').forEach(button => {
     button.setAttribute('aria-pressed', String(button.dataset.platform === selected));
   });
+  moveHighlight();
   const platform = platforms[selected];
   if (platform) {
     const list = document.createElement('ol');
@@ -56,19 +114,12 @@ function render() {
     releaseNote.hidden = missing.length === 0;
     releaseNote.textContent = missing.length ? `${missing.map(platform => platform.name).join(', ')} downloads are not listed in this release. Open the latest release on GitHub to check available files.` : '';
   }
-  document.querySelectorAll('[data-download]').forEach(link => {
-    link.hidden = link.dataset.download === visitorPlatform;
-    const platform = platforms[link.dataset.download];
-    const asset = assets.find(item => item.name.endsWith(platform.suffix));
-    link.href = asset ? asset.browser_download_url : releasesUrl;
-    link.setAttribute('aria-label', asset ? `Download for ${platform.name}` : `Find ${platform.name} downloads on GitHub`);
-  });
 }
 
 document.querySelectorAll('[data-platform]').forEach(button => {
   button.addEventListener('click', () => {
     selected = button.dataset.platform;
-    render();
+    transitionContent(render);
   });
 });
 render();
@@ -81,13 +132,17 @@ async function loadRelease() {
     assets = (release.assets || []).filter(asset => typeof asset.name === 'string' && typeof asset.browser_download_url === 'string');
     const date = new Date(release.published_at);
     const dateText = Number.isNaN(date.getTime()) ? 'Release date unavailable' : `Released ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
-    document.querySelector('#release').textContent = `${release.tag_name || release.name || 'Latest release'} · ${dateText}`;
-    loaded = true;
-    render();
+    transitionContent(() => {
+      document.querySelector('#release').textContent = `${release.tag_name || release.name || 'Latest release'} · ${dateText}`;
+      loaded = true;
+      render();
+    });
   } catch {
-    document.querySelector('#release').textContent = 'Release details are unavailable right now.';
-    releaseNote.hidden = false;
-    releaseNote.textContent = 'We could not load the latest release. Open the latest release on GitHub to check for downloads.';
+    transitionContent(() => {
+      document.querySelector('#release').textContent = 'Release details are unavailable right now.';
+      releaseNote.hidden = false;
+      releaseNote.textContent = 'We could not load the latest release. Open the latest release on GitHub to check for downloads.';
+    });
   }
 }
 loadRelease();
