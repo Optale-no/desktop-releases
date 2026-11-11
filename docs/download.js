@@ -17,7 +17,8 @@ const platforms = {
 };
 const ua = navigator.userAgent;
 const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-let selected = !mobile && /Mac/i.test(ua) ? 'mac' : !mobile && /Windows/i.test(ua) ? 'windows' : !mobile && /Linux/i.test(ua) ? 'linux' : null;
+const visitorPlatform = !mobile && /Mac/i.test(ua) ? 'mac' : !mobile && /Windows/i.test(ua) ? 'windows' : !mobile && /Linux/i.test(ua) ? 'linux' : null;
+let selected = visitorPlatform;
 let assets = [];
 let loaded = false;
 const download = document.querySelector('#download');
@@ -56,6 +57,7 @@ function render() {
     releaseNote.textContent = missing.length ? `${missing.map(platform => platform.name).join(', ')} downloads are not listed in this release. Open the latest release on GitHub to check available files.` : '';
   }
   document.querySelectorAll('[data-download]').forEach(link => {
+    link.hidden = link.dataset.download === visitorPlatform;
     const platform = platforms[link.dataset.download];
     const asset = assets.find(item => item.name.endsWith(platform.suffix));
     link.href = asset ? asset.browser_download_url : releasesUrl;

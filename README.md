@@ -20,7 +20,7 @@ The page reads `https://api.github.com/repos/Optale-no/desktop-releases/releases
 
 Publish these assets on a GitHub Release. No page edit is needed for a new version. The page shows the release tag and its publication date in UTC. If the API fails, times out, or has no published release, links lead to `https://github.com/Optale-no/desktop-releases/releases/latest` with a plain explanation. Missing platform assets also link there rather than inventing a file URL.
 
-Desktop visitors get their platform's download and three install steps. The platform buttons change the instructions and main download. Links below the steps download the other platforms directly. Phone and tablet visitors get guidance to open the page on a computer.
+Desktop visitors get their platform's download and three install steps. The platform buttons change the instructions and main download. Links below the steps download the other platforms directly and omit the visitor's detected platform. Phone and tablet visitors get guidance to open the page on a computer and links to all three platforms.
 
 Windows is currently unsigned. Its instructions explain the "Windows protected your PC" prompt, "More info" and "Run anyway".
 
