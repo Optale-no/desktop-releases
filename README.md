@@ -30,6 +30,8 @@ Windows is currently unsigned. Its instructions explain the "Windows protected y
 
 GitHub Pages serves `main` with `/docs` as its source at `https://download.optale.com`. Keep `docs/CNAME` when updating the page.
 
+The footer's Release notes link opens the public changelog at `https://optale.com/changelog`.
+
 ## Visual sources
 
 `docs/assets/icon.png` and `docs/assets/inter.woff2` come from `Optale-no/console`, branch `origin/desktop/m1`, at `desktop/build/icon.png` and `desktop/src/picker/inter.woff2`. Colors and typography follow the native picker and the Console dark-zinc theme.
